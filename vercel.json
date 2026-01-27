@@ -11,8 +11,5 @@
       "src": "/(.*)",
       "dest": "api/index.py"
     }
-  ],
-  "env": {
-    "FIRMS_API_KEY": "@firms_api_key"
-  }
+  ]
 }
