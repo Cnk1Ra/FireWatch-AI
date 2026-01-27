@@ -18,6 +18,37 @@ WEATHER_API_URL = "https://api.open-meteo.com/v1/forecast"
 # ============================================================================
 # Biome Data
 # ============================================================================
+# Brazilian States (approximate bounds)
+STATES = {
+    "Acre": {"west": -74, "south": -11.5, "east": -66.5, "north": -7},
+    "Amazonas": {"west": -74, "south": -10, "east": -56, "north": 2.5},
+    "Roraima": {"west": -65, "south": 0, "east": -58, "north": 5.5},
+    "Para": {"west": -59, "south": -10, "east": -46, "north": 3},
+    "Amapa": {"west": -55, "south": -1, "east": -49, "north": 5},
+    "Tocantins": {"west": -51, "south": -14, "east": -45.5, "north": -5},
+    "Maranhao": {"west": -49, "south": -11, "east": -41, "north": -1},
+    "Piaui": {"west": -46, "south": -11, "east": -40.5, "north": -2.5},
+    "Ceara": {"west": -42, "south": -8, "east": -37, "north": -2.5},
+    "Rio Grande do Norte": {"west": -38.5, "south": -7, "east": -34.5, "north": -4.5},
+    "Paraiba": {"west": -39, "south": -8.5, "east": -34.5, "north": -6},
+    "Pernambuco": {"west": -41.5, "south": -10, "east": -34.5, "north": -7},
+    "Alagoas": {"west": -38.5, "south": -10.5, "east": -35, "north": -8.5},
+    "Sergipe": {"west": -38.5, "south": -11.5, "east": -36.5, "north": -9.5},
+    "Bahia": {"west": -47, "south": -18.5, "east": -37.5, "north": -8.5},
+    "Minas Gerais": {"west": -52, "south": -23, "east": -39.5, "north": -14},
+    "Espirito Santo": {"west": -42, "south": -21.5, "east": -39.5, "north": -17.5},
+    "Rio de Janeiro": {"west": -45, "south": -23.5, "east": -40.5, "north": -20.5},
+    "Sao Paulo": {"west": -54, "south": -26, "east": -44, "north": -19.5},
+    "Parana": {"west": -55, "south": -27, "east": -48, "north": -22.5},
+    "Santa Catarina": {"west": -54, "south": -29.5, "east": -48, "north": -25.5},
+    "Rio Grande do Sul": {"west": -58, "south": -34, "east": -49, "north": -27},
+    "Mato Grosso do Sul": {"west": -58, "south": -25, "east": -53, "north": -17},
+    "Mato Grosso": {"west": -62, "south": -18, "east": -50, "north": -7},
+    "Goias": {"west": -53.5, "south": -20, "east": -45.5, "north": -12.5},
+    "Distrito Federal": {"west": -48.5, "south": -16.1, "east": -47, "north": -15.4},
+    "Rondonia": {"west": -67, "south": -14, "east": -59.5, "north": -7.5}
+}
+
 BIOMES = {
     "Amazonia": {
         "bounds": {"west": -74, "south": -10, "east": -44, "north": 5},
@@ -66,6 +97,14 @@ BIOMES = {
 # ============================================================================
 # Helper Functions
 # ============================================================================
+
+def get_state(lat, lon):
+    """Determine Brazilian state based on coordinates."""
+    for name, bounds in STATES.items():
+        if bounds["west"] <= lon <= bounds["east"] and bounds["south"] <= lat <= bounds["north"]:
+            return name
+    return "Brasil"
+
 
 def get_biome(lat, lon):
     """Determine biome based on coordinates."""
@@ -295,6 +334,11 @@ def cluster_hotspots(hotspots, distance_km=5):
             cluster["estimated_area_ha"] = round(lat_range * lon_range * 100, 1)
         else:
             cluster["estimated_area_ha"] = 1.0
+
+        # Add location info
+        cluster["state"] = get_state(cluster["center_lat"], cluster["center_lon"])
+        biome_name, biome_data = get_biome(cluster["center_lat"], cluster["center_lon"])
+        cluster["biome"] = biome_name
 
         # Remove hotspots list to reduce response size
         del cluster["hotspots"]
@@ -1231,6 +1275,46 @@ def get_dashboard_page():
             return dirs[Math.round(degrees / 45) % 8];
         }
 
+        // Brazilian states boundaries (simplified)
+        const states = {
+            "Acre": {west: -74, south: -11.5, east: -66.5, north: -7},
+            "Amazonas": {west: -74, south: -10, east: -56, north: 2.5},
+            "Roraima": {west: -65, south: 0, east: -58, north: 5.5},
+            "Para": {west: -59, south: -10, east: -46, north: 3},
+            "Amapa": {west: -55, south: -1, east: -49, north: 5},
+            "Tocantins": {west: -51, south: -14, east: -45.5, north: -5},
+            "Maranhao": {west: -49, south: -11, east: -41, north: -1},
+            "Piaui": {west: -46, south: -11, east: -40.5, north: -2.5},
+            "Ceara": {west: -42, south: -8, east: -37, north: -2.5},
+            "Rio Grande do Norte": {west: -38.5, south: -7, east: -34.5, north: -4.5},
+            "Paraiba": {west: -39, south: -8.5, east: -34.5, north: -6},
+            "Pernambuco": {west: -41.5, south: -10, east: -34.5, north: -7},
+            "Alagoas": {west: -38.5, south: -10.5, east: -35, north: -8.5},
+            "Sergipe": {west: -38.5, south: -11.5, east: -36.5, north: -9.5},
+            "Bahia": {west: -47, south: -18.5, east: -37.5, north: -8.5},
+            "Minas Gerais": {west: -52, south: -23, east: -39.5, north: -14},
+            "Espirito Santo": {west: -42, south: -21.5, east: -39.5, north: -17.5},
+            "Rio de Janeiro": {west: -45, south: -23.5, east: -40.5, north: -20.5},
+            "Sao Paulo": {west: -54, south: -26, east: -44, north: -19.5},
+            "Parana": {west: -55, south: -27, east: -48, north: -22.5},
+            "Santa Catarina": {west: -54, south: -29.5, east: -48, north: -25.5},
+            "Rio Grande do Sul": {west: -58, south: -34, east: -49, north: -27},
+            "Mato Grosso do Sul": {west: -58, south: -25, east: -53, north: -17},
+            "Mato Grosso": {west: -62, south: -18, east: -50, north: -7},
+            "Goias": {west: -53.5, south: -20, east: -45.5, north: -12.5},
+            "Distrito Federal": {west: -48.5, south: -16.1, east: -47, north: -15.4},
+            "Rondonia": {west: -67, south: -14, east: -59.5, north: -7.5}
+        };
+
+        function getStateName(lat, lon) {
+            for (const [name, bounds] of Object.entries(states)) {
+                if (lon >= bounds.west && lon <= bounds.east && lat >= bounds.south && lat <= bounds.north) {
+                    return name;
+                }
+            }
+            return 'Brasil';
+        }
+
         function showLoading() {
             document.getElementById('loading').classList.add('active');
         }
@@ -1274,6 +1358,13 @@ def get_dashboard_page():
 
         async function fetchEmissions(lat, lon, area) {
             const url = '/api/emissions?lat=' + lat + '&lon=' + lon + '&area=' + area;
+            const response = await fetch(url);
+            return await response.json();
+        }
+
+        async function fetchLocationInfo(lat, lon) {
+            const droughtDays = parseInt(document.getElementById('droughtDays').value) || 5;
+            const url = '/api/location?lat=' + lat + '&lon=' + lon + '&days_without_rain=' + droughtDays;
             const response = await fetch(url);
             return await response.json();
         }
@@ -1437,13 +1528,22 @@ def get_dashboard_page():
 
                 marker.on('click', () => selectHotspot(h));
 
-                const popup = '<div style="font-family: sans-serif;">' +
-                    '<h4 style="color: #ff6b35; margin: 0 0 8px 0;">Foco de Incendio</h4>' +
-                    '<p style="margin: 4px 0;"><strong>Coords:</strong> ' + h.latitude.toFixed(4) + ', ' + h.longitude.toFixed(4) + '</p>' +
-                    '<p style="margin: 4px 0;"><strong>FRP:</strong> ' + h.frp.toFixed(1) + ' MW</p>' +
+                // Find state for this hotspot
+                const state = getStateName(h.latitude, h.longitude);
+
+                const popup = '<div style="font-family: sans-serif; min-width: 200px;">' +
+                    '<h4 style="color: #ff6b35; margin: 0 0 8px 0; border-bottom: 1px solid #ddd; padding-bottom: 5px;">🔥 Foco de Incendio</h4>' +
+                    '<p style="margin: 4px 0; font-weight: bold; color: #333;">📍 ' + state + '</p>' +
+                    '<p style="margin: 4px 0; font-size: 0.85em; color: #666;">' + h.latitude.toFixed(5) + ', ' + h.longitude.toFixed(5) + '</p>' +
+                    '<hr style="border: none; border-top: 1px solid #eee; margin: 8px 0;">' +
+                    '<p style="margin: 4px 0;"><strong>FRP:</strong> <span style="color: ' + (h.frp > 50 ? '#dc2626' : h.frp > 10 ? '#f97316' : '#eab308') + '; font-weight: bold;">' + h.frp.toFixed(1) + ' MW</span></p>' +
                     '<p style="margin: 4px 0;"><strong>Brilho:</strong> ' + h.brightness.toFixed(1) + ' K</p>' +
                     '<p style="margin: 4px 0;"><strong>Confianca:</strong> ' + h.confidence + '</p>' +
-                    '<p style="margin: 4px 0;"><strong>Data:</strong> ' + h.acq_datetime + '</p>' +
+                    '<p style="margin: 4px 0;"><strong>Satelite:</strong> ' + h.satellite + '</p>' +
+                    '<p style="margin: 4px 0;"><strong>Data/Hora:</strong> ' + h.acq_datetime + '</p>' +
+                    '<p style="margin: 4px 0;"><strong>Periodo:</strong> ' + (h.daynight === 'D' ? '☀️ Diurno' : '🌙 Noturno') + '</p>' +
+                    '<hr style="border: none; border-top: 1px solid #eee; margin: 8px 0;">' +
+                    '<p style="margin: 4px 0; font-size: 0.8em; color: #888;">Clique para ver dados climaticos</p>' +
                     '</div>';
 
                 marker.bindPopup(popup);
@@ -1532,11 +1632,12 @@ def get_dashboard_page():
             list.innerHTML = currentClusters.slice(0, 10).map(c =>
                 '<div class="cluster-item" onclick="focusCluster(' + c.id + ')">' +
                     '<div class="cluster-header">' +
-                        '<span class="cluster-id">Incendio #' + c.id + '</span>' +
+                        '<span class="cluster-id">' + (c.state || 'Brasil') + '</span>' +
                         '<span class="cluster-count">' + c.count + ' focos</span>' +
                     '</div>' +
+                    '<div style="font-size: 0.7em; color: #f7c873; margin: 4px 0;">' + (c.biome || '') + '</div>' +
                     '<div class="cluster-details">' +
-                        '<span>FRP Total: ' + c.total_frp.toFixed(1) + '</span>' +
+                        '<span>FRP: ' + c.total_frp.toFixed(1) + ' MW</span>' +
                         '<span>Area: ' + c.estimated_area_ha + ' ha</span>' +
                     '</div>' +
                 '</div>'
@@ -1548,7 +1649,8 @@ def get_dashboard_page():
             select.innerHTML = '<option value="">Selecione um incendio...</option>';
 
             currentClusters.slice(0, 20).forEach(c => {
-                select.innerHTML += '<option value="' + c.id + '">Incendio #' + c.id + ' (' + c.count + ' focos, ' + c.estimated_area_ha + ' ha)</option>';
+                const location = c.state || 'Brasil';
+                select.innerHTML += '<option value="' + c.id + '">' + location + ' - ' + c.count + ' focos (' + c.estimated_area_ha + ' ha)</option>';
             });
         }
 
@@ -1560,15 +1662,24 @@ def get_dashboard_page():
             if (cluster) {
                 map.setView([cluster.center_lat, cluster.center_lon], 10);
                 selectCluster(cluster);
+                loadLocationData(cluster.center_lat, cluster.center_lon);
             }
         }
 
         function selectCluster(cluster) {
             selectedCluster = cluster;
             document.getElementById('fireSelect').value = cluster.id;
+
+            // Highlight selected in list
+            document.querySelectorAll('.cluster-item').forEach((el, i) => {
+                el.style.borderLeftColor = (currentClusters[i] && currentClusters[i].id === cluster.id) ? '#4ade80' : '#ff6b35';
+            });
         }
 
         function selectHotspot(hotspot) {
+            // Load location data for this hotspot
+            loadLocationData(hotspot.latitude, hotspot.longitude);
+
             // Find cluster containing this hotspot
             const cluster = currentClusters.find(c => {
                 const dist = Math.sqrt(
@@ -1580,6 +1691,53 @@ def get_dashboard_page():
 
             if (cluster) {
                 selectCluster(cluster);
+            }
+        }
+
+        async function loadLocationData(lat, lon) {
+            try {
+                const data = await fetchLocationInfo(lat, lon);
+
+                // Update weather display for this specific location
+                document.getElementById('weatherTemp').textContent = data.weather.temperature + '°C';
+                document.getElementById('weatherHumid').textContent = data.weather.humidity + '%';
+                document.getElementById('weatherWind').textContent = data.weather.wind_speed + ' km/h';
+                document.getElementById('weatherDir').textContent = getWindDirection(data.weather.wind_direction);
+
+                // Update current biome display
+                document.getElementById('currentBiome').textContent = data.state + ' - ' + data.biome;
+
+                // Update risk display
+                document.getElementById('riskValue').textContent = data.risk.index;
+                document.getElementById('riskLevel').textContent = data.risk.level;
+                document.getElementById('riskIndicator').style.left = data.risk.index + '%';
+                document.getElementById('headerRisk').textContent = data.risk.level;
+
+                // Color based on risk
+                const riskEl = document.getElementById('riskValue');
+                riskEl.className = 'risk-value';
+                if (data.risk.index >= 60) riskEl.classList.add('red');
+                else if (data.risk.index >= 40) riskEl.classList.add('yellow');
+                else riskEl.classList.add('green');
+
+                // Update factors
+                document.getElementById('tempValue').textContent = data.weather.temperature + '°C';
+                document.getElementById('tempBar').style.width = Math.min(100, (data.weather.temperature - 20) * 4) + '%';
+                document.getElementById('humidValue').textContent = data.weather.humidity + '%';
+                document.getElementById('humidBar').style.width = (100 - data.weather.humidity) + '%';
+                document.getElementById('windValue').textContent = data.weather.wind_speed + ' km/h';
+                document.getElementById('windBar').style.width = Math.min(100, data.weather.wind_speed * 2) + '%';
+
+                // Update biome info
+                document.getElementById('biomeName').textContent = data.biome;
+                document.getElementById('biomeCarbon').textContent = data.biome_data.carbon_tons_ha;
+                document.getElementById('biomeRecovery').textContent = data.biome_data.recovery_years;
+
+                // Update weather current location
+                currentWeather = data.weather;
+
+            } catch (error) {
+                console.error('Error loading location data:', error);
             }
         }
 
@@ -1921,6 +2079,44 @@ class handler(BaseHTTPRequestHandler):
                     "spread_rate": spread_rate,
                     "biome": biome_name,
                     "predictions": predictions
+                })
+            except Exception as e:
+                self.send_json(400, {"error": str(e)})
+            return
+
+        # Location info endpoint
+        if path == "/api/location":
+            try:
+                lat = float(query.get("lat", [-22])[0])
+                lon = float(query.get("lon", [-48])[0])
+
+                state = get_state(lat, lon)
+                biome_name, biome_data = get_biome(lat, lon)
+                weather, _ = fetch_weather(lat, lon)
+
+                # Calculate risk
+                days_without_rain = int(query.get("days_without_rain", [5])[0])
+                risk_index = calculate_risk_index(
+                    weather["temperature"],
+                    weather["humidity"],
+                    weather["wind_speed"],
+                    days_without_rain
+                )
+
+                self.send_json(200, {
+                    "state": state,
+                    "biome": biome_name,
+                    "coordinates": {"lat": lat, "lon": lon},
+                    "weather": weather,
+                    "risk": {
+                        "index": risk_index,
+                        "level": get_risk_level(risk_index)
+                    },
+                    "biome_data": {
+                        "carbon_tons_ha": biome_data["carbon_tons_ha"],
+                        "recovery_years": biome_data.get("recovery_years", 20),
+                        "spread_factor": biome_data.get("spread_factor", 1.0)
+                    }
                 })
             except Exception as e:
                 self.send_json(400, {"error": str(e)})
