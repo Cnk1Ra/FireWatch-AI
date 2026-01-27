@@ -5,7 +5,7 @@ Standalone version for serverless deployment
 
 import os
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 from enum import Enum
 
 from fastapi import FastAPI, HTTPException, Query
@@ -69,7 +69,7 @@ class HotspotsListResponse(BaseModel):
     count: int
     source: str
     query_time: str
-    hotspots: list[HotspotResponse]
+    hotspots: List[HotspotResponse]
 
 
 class HealthResponse(BaseModel):
@@ -83,7 +83,7 @@ class HealthResponse(BaseModel):
 # FIRMS Client Functions
 # ============================================================================
 
-def parse_csv_hotspots(csv_text: str) -> list[dict]:
+def parse_csv_hotspots(csv_text: str) -> List[dict]:
     """Parse FIRMS CSV response into hotspot dictionaries."""
     lines = csv_text.strip().split("\n")
     if len(lines) < 2:
@@ -103,7 +103,7 @@ def parse_csv_hotspots(csv_text: str) -> list[dict]:
                     "brightness": float(row.get("bright_ti4", 0) or row.get("brightness", 0)),
                     "frp": float(row.get("frp", 0) or 0),
                     "confidence": row.get("confidence", "n"),
-                    "acq_datetime": f"{row.get('acq_date', '')} {row.get('acq_time', '')}",
+                    "acq_datetime": "{} {}".format(row.get("acq_date", ""), row.get("acq_time", "")),
                     "satellite": row.get("satellite", "Unknown"),
                     "daynight": row.get("daynight", "D"),
                 }
@@ -121,12 +121,14 @@ async def fetch_area_hotspots(
     north: float,
     days: int = 1,
     source: str = "VIIRS_NOAA20_NRT"
-) -> list[dict]:
+) -> List[dict]:
     """Fetch hotspots from FIRMS API for a bounding box."""
     if not FIRMS_API_KEY:
         raise HTTPException(status_code=500, detail="FIRMS_API_KEY not configured")
 
-    url = f"{FIRMS_BASE_URL}/area/csv/{FIRMS_API_KEY}/{source}/{west},{south},{east},{north}/{days}"
+    url = "{}/area/csv/{}/{}/{},{},{},{}/{}".format(
+        FIRMS_BASE_URL, FIRMS_API_KEY, source, west, south, east, north, days
+    )
 
     async with httpx.AsyncClient(timeout=30.0) as client:
         response = await client.get(url)
@@ -134,7 +136,7 @@ async def fetch_area_hotspots(
         if response.status_code != 200:
             raise HTTPException(
                 status_code=response.status_code,
-                detail=f"FIRMS API error: {response.text[:200]}"
+                detail="FIRMS API error: {}".format(response.text[:200])
             )
 
         return parse_csv_hotspots(response.text)
@@ -144,12 +146,14 @@ async def fetch_country_hotspots(
     country_code: str,
     days: int = 1,
     source: str = "VIIRS_NOAA20_NRT"
-) -> list[dict]:
+) -> List[dict]:
     """Fetch hotspots from FIRMS API for a country."""
     if not FIRMS_API_KEY:
         raise HTTPException(status_code=500, detail="FIRMS_API_KEY not configured")
 
-    url = f"{FIRMS_BASE_URL}/country/csv/{FIRMS_API_KEY}/{source}/{country_code}/{days}"
+    url = "{}/country/csv/{}/{}/{}/{}".format(
+        FIRMS_BASE_URL, FIRMS_API_KEY, source, country_code, days
+    )
 
     async with httpx.AsyncClient(timeout=30.0) as client:
         response = await client.get(url)
@@ -157,7 +161,7 @@ async def fetch_country_hotspots(
         if response.status_code != 200:
             raise HTTPException(
                 status_code=response.status_code,
-                detail=f"FIRMS API error: {response.text[:200]}"
+                detail="FIRMS API error: {}".format(response.text[:200])
             )
 
         return parse_csv_hotspots(response.text)
@@ -170,7 +174,7 @@ async def fetch_country_hotspots(
 @app.get("/", response_class=HTMLResponse)
 async def root():
     """Welcome page with API documentation."""
-    return """
+    html = """
     <!DOCTYPE html>
     <html>
     <head>
@@ -204,9 +208,6 @@ async def root():
                 margin: 8px 0;
                 border-radius: 6px;
                 border-left: 4px solid #ff6b35;
-                display: flex;
-                align-items: center;
-                gap: 10px;
             }
             .tag {
                 background: #ff6b35;
@@ -215,14 +216,13 @@ async def root():
                 border-radius: 4px;
                 font-size: 12px;
                 font-weight: bold;
-                min-width: 45px;
-                text-align: center;
+                margin-right: 10px;
             }
             .subtitle { color: #888; font-size: 1.1em; margin-bottom: 30px; }
             hr { border: none; border-top: 1px solid #333; margin: 40px 0; }
             .stats {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                grid-template-columns: repeat(3, 1fr);
                 gap: 15px;
                 margin: 20px 0;
             }
@@ -238,7 +238,7 @@ async def root():
         </style>
     </head>
     <body>
-        <h1>🔥 FireWatch AI</h1>
+        <h1>FireWatch AI</h1>
         <p class="subtitle">Open-source global wildfire detection platform combining NASA satellite data and AI analysis.</p>
 
         <div class="stats">
@@ -256,33 +256,30 @@ async def root():
             </div>
         </div>
 
-        <h3>📚 Documentation</h3>
-        <div class="endpoint"><a href="/docs">📖 Swagger UI - Interactive API Documentation</a></div>
-        <div class="endpoint"><a href="/redoc">📘 ReDoc - Alternative Documentation</a></div>
-        <div class="endpoint"><a href="/health">💚 Health Check</a></div>
+        <h3>Documentation</h3>
+        <div class="endpoint"><a href="/docs">Swagger UI - Interactive API Documentation</a></div>
+        <div class="endpoint"><a href="/redoc">ReDoc - Alternative Documentation</a></div>
+        <div class="endpoint"><a href="/health">Health Check</a></div>
 
-        <h3>🔥 Fire Hotspots</h3>
+        <h3>Fire Hotspots</h3>
         <div class="endpoint">
             <span class="tag">GET</span>
-            <code>/api/v1/hotspots/country/{code}</code>
-            <span style="color:#888">- Get fires by country (BRA, USA, AUS)</span>
+            <code>/api/v1/hotspots/country/{code}</code> - Get fires by country (BRA, USA, AUS)
         </div>
         <div class="endpoint">
             <span class="tag">GET</span>
-            <code>/api/v1/hotspots/area</code>
-            <span style="color:#888">- Get fires in bounding box</span>
+            <code>/api/v1/hotspots/area</code> - Get fires in bounding box
         </div>
 
-        <h3>📊 Statistics</h3>
+        <h3>Statistics</h3>
         <div class="endpoint">
             <span class="tag">GET</span>
-            <code>/api/v1/stats/area</code>
-            <span style="color:#888">- Fire statistics for region</span>
+            <code>/api/v1/stats/area</code> - Fire statistics for region
         </div>
 
-        <h3>🗺️ Example Queries</h3>
-        <p>Get fires in São Paulo region:</p>
-        <code>/api/v1/hotspots/area?west=-50&south=-25&east=-44&north=-19&days=2</code>
+        <h3>Example Queries</h3>
+        <p>Get fires in Sao Paulo region:</p>
+        <code>/api/v1/hotspots/area?west=-50&amp;south=-25&amp;east=-44&amp;north=-19&amp;days=2</code>
 
         <p style="margin-top:15px">Get fires in Brazil:</p>
         <code>/api/v1/hotspots/country/BRA?days=1</code>
@@ -290,7 +287,7 @@ async def root():
         <hr>
         <footer>
             <p>
-                <a href="https://github.com/Cnk1Ra/FireWatch-AI">📦 GitHub Repository</a> |
+                <a href="https://github.com/Cnk1Ra/FireWatch-AI">GitHub Repository</a> |
                 Data: <a href="https://firms.modaps.eosdis.nasa.gov/">NASA FIRMS</a>
             </p>
             <p>Version 0.2.0 | Deployed on Vercel</p>
@@ -298,6 +295,7 @@ async def root():
     </body>
     </html>
     """
+    return html
 
 
 @app.get("/health", response_model=HealthResponse, tags=["System"])
@@ -351,7 +349,7 @@ async def get_area_hotspots(
     """
     Get fire hotspots within a bounding box.
 
-    Example for São Paulo region: west=-50, south=-25, east=-44, north=-19
+    Example for Sao Paulo region: west=-50, south=-25, east=-44, north=-19
     """
     try:
         hotspots = await fetch_area_hotspots(west, south, east, north, days, source.value)
