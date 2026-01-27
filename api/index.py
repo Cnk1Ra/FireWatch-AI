@@ -727,30 +727,30 @@ def get_dashboard_page():
             background: #0a0a15;
         }
 
-        /* Loading Overlay */
-        .loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.9);
-            padding: 30px 50px;
-            border-radius: 10px;
-            z-index: 1000;
+        /* Loading Indicator (discrete in header) */
+        .loading-indicator {
             display: none;
-            text-align: center;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: rgba(255, 107, 53, 0.15);
+            border-radius: 20px;
+            font-size: 0.75em;
+            color: #ff6b35;
         }
-        .loading.active { display: block; }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #333;
+        .loading-indicator.active { display: flex; }
+        .spinner-small {
+            width: 14px;
+            height: 14px;
+            border: 2px solid #333;
             border-top-color: #ff6b35;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Legacy loading (hidden) */
+        .loading { display: none !important; }
 
         /* Map Controls */
         .map-overlay {
@@ -823,6 +823,10 @@ def get_dashboard_page():
     <div class="header">
         <div class="logo">FireWatch <span>AI</span></div>
         <div class="header-info">
+            <div class="loading-indicator active" id="loadingIndicator">
+                <div class="spinner-small"></div>
+                <span>Carregando...</span>
+            </div>
             <div class="header-stat">
                 <div class="header-stat-value" id="headerFires">-</div>
                 <div class="header-stat-label">FOCOS ATIVOS</div>
@@ -1188,10 +1192,6 @@ def get_dashboard_page():
         <div class="map-container">
             <div id="map"></div>
 
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <div>Carregando dados da NASA FIRMS...</div>
-            </div>
 
             <div class="map-overlay">
                 <div class="map-card">
@@ -1418,11 +1418,11 @@ def get_dashboard_page():
         }
 
         function showLoading() {
-            document.getElementById('loading').classList.add('active');
+            document.getElementById('loadingIndicator').classList.add('active');
         }
 
         function hideLoading() {
-            document.getElementById('loading').classList.remove('active');
+            document.getElementById('loadingIndicator').classList.remove('active');
         }
 
         // ========================================
@@ -1622,13 +1622,12 @@ def get_dashboard_page():
                     map.fitBounds(markers.getBounds(), { padding: [50, 50] });
                 }
 
+                // Hide loading indicator after successful load
+                hideLoading();
+
             } catch (error) {
                 console.error('Error loading data:', error);
-                if (!autoRefreshEnabled) {
-                    alert('Erro ao carregar dados: ' + error.message);
-                }
-            } finally {
-                if (!autoRefreshEnabled) hideLoading();
+                hideLoading();
             }
         }
 
