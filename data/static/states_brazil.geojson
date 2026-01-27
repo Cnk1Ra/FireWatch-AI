@@ -1,0 +1,384 @@
+{
+  "type": "FeatureCollection",
+  "name": "states_brazil",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Acre",
+        "abbrev": "AC",
+        "region": "Norte",
+        "capital": "Rio Branco",
+        "population": 906876
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-74, -7], [-66.5, -7], [-66.5, -11.5], [-74, -11.5], [-74, -7]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Alagoas",
+        "abbrev": "AL",
+        "region": "Nordeste",
+        "capital": "Maceio",
+        "population": 3365351
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-38.5, -8.5], [-35, -8.5], [-35, -10.5], [-38.5, -10.5], [-38.5, -8.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Amapa",
+        "abbrev": "AP",
+        "region": "Norte",
+        "capital": "Macapa",
+        "population": 877613
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-55, -1], [-49, -1], [-49, 5], [-55, 5], [-55, -1]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Amazonas",
+        "abbrev": "AM",
+        "region": "Norte",
+        "capital": "Manaus",
+        "population": 4269995
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-74, -10], [-56, -10], [-56, 2.5], [-74, 2.5], [-74, -10]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bahia",
+        "abbrev": "BA",
+        "region": "Nordeste",
+        "capital": "Salvador",
+        "population": 14985284
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-47, -8.5], [-37.5, -8.5], [-37.5, -18.5], [-47, -18.5], [-47, -8.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ceara",
+        "abbrev": "CE",
+        "region": "Nordeste",
+        "capital": "Fortaleza",
+        "population": 9240580
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-42, -2.5], [-37, -2.5], [-37, -8], [-42, -8], [-42, -2.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Distrito Federal",
+        "abbrev": "DF",
+        "region": "Centro-Oeste",
+        "capital": "Brasilia",
+        "population": 3094325
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-48.5, -15.4], [-47, -15.4], [-47, -16.1], [-48.5, -16.1], [-48.5, -15.4]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Espirito Santo",
+        "abbrev": "ES",
+        "region": "Sudeste",
+        "capital": "Vitoria",
+        "population": 4108508
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-42, -17.5], [-39.5, -17.5], [-39.5, -21.5], [-42, -21.5], [-42, -17.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Goias",
+        "abbrev": "GO",
+        "region": "Centro-Oeste",
+        "capital": "Goiania",
+        "population": 7206589
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-53.5, -12.5], [-45.5, -12.5], [-45.5, -20], [-53.5, -20], [-53.5, -12.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Maranhao",
+        "abbrev": "MA",
+        "region": "Nordeste",
+        "capital": "Sao Luis",
+        "population": 7153262
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-49, -1], [-41, -1], [-41, -11], [-49, -11], [-49, -1]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Mato Grosso",
+        "abbrev": "MT",
+        "region": "Centro-Oeste",
+        "capital": "Cuiaba",
+        "population": 3567234
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-62, -7], [-50, -7], [-50, -18], [-62, -18], [-62, -7]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Mato Grosso do Sul",
+        "abbrev": "MS",
+        "region": "Centro-Oeste",
+        "capital": "Campo Grande",
+        "population": 2839188
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-58, -17], [-53, -17], [-53, -25], [-58, -25], [-58, -17]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Minas Gerais",
+        "abbrev": "MG",
+        "region": "Sudeste",
+        "capital": "Belo Horizonte",
+        "population": 21411923
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-52, -14], [-39.5, -14], [-39.5, -23], [-52, -23], [-52, -14]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Para",
+        "abbrev": "PA",
+        "region": "Norte",
+        "capital": "Belem",
+        "population": 8777124
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-59, -10], [-46, -10], [-46, 3], [-59, 3], [-59, -10]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Paraiba",
+        "abbrev": "PB",
+        "region": "Nordeste",
+        "capital": "Joao Pessoa",
+        "population": 4059905
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-39, -6], [-34.5, -6], [-34.5, -8.5], [-39, -8.5], [-39, -6]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Parana",
+        "abbrev": "PR",
+        "region": "Sul",
+        "capital": "Curitiba",
+        "population": 11597484
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-55, -22.5], [-48, -22.5], [-48, -27], [-55, -27], [-55, -22.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Pernambuco",
+        "abbrev": "PE",
+        "region": "Nordeste",
+        "capital": "Recife",
+        "population": 9674793
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-41.5, -7], [-34.5, -7], [-34.5, -10], [-41.5, -10], [-41.5, -7]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Piaui",
+        "abbrev": "PI",
+        "region": "Nordeste",
+        "capital": "Teresina",
+        "population": 3289290
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-46, -2.5], [-40.5, -2.5], [-40.5, -11], [-46, -11], [-46, -2.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Rio de Janeiro",
+        "abbrev": "RJ",
+        "region": "Sudeste",
+        "capital": "Rio de Janeiro",
+        "population": 17463349
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-45, -20.5], [-40.5, -20.5], [-40.5, -23.5], [-45, -23.5], [-45, -20.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Rio Grande do Norte",
+        "abbrev": "RN",
+        "region": "Nordeste",
+        "capital": "Natal",
+        "population": 3560903
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-38.5, -4.5], [-34.5, -4.5], [-34.5, -7], [-38.5, -7], [-38.5, -4.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Rio Grande do Sul",
+        "abbrev": "RS",
+        "region": "Sul",
+        "capital": "Porto Alegre",
+        "population": 11466630
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-58, -27], [-49, -27], [-49, -34], [-58, -34], [-58, -27]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Rondonia",
+        "abbrev": "RO",
+        "region": "Norte",
+        "capital": "Porto Velho",
+        "population": 1815278
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-67, -7.5], [-59.5, -7.5], [-59.5, -14], [-67, -14], [-67, -7.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Roraima",
+        "abbrev": "RR",
+        "region": "Norte",
+        "capital": "Boa Vista",
+        "population": 652713
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-65, 0], [-58, 0], [-58, 5.5], [-65, 5.5], [-65, 0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Santa Catarina",
+        "abbrev": "SC",
+        "region": "Sul",
+        "capital": "Florianopolis",
+        "population": 7338473
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-54, -25.5], [-48, -25.5], [-48, -29.5], [-54, -29.5], [-54, -25.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Sao Paulo",
+        "abbrev": "SP",
+        "region": "Sudeste",
+        "capital": "Sao Paulo",
+        "population": 46649132
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-54, -19.5], [-44, -19.5], [-44, -26], [-54, -26], [-54, -19.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Sergipe",
+        "abbrev": "SE",
+        "region": "Nordeste",
+        "capital": "Aracaju",
+        "population": 2338474
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-38.5, -9.5], [-36.5, -9.5], [-36.5, -11.5], [-38.5, -11.5], [-38.5, -9.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tocantins",
+        "abbrev": "TO",
+        "region": "Norte",
+        "capital": "Palmas",
+        "population": 1607363
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-51, -5], [-45.5, -5], [-45.5, -14], [-51, -14], [-51, -5]]]
+      }
+    }
+  ]
+}

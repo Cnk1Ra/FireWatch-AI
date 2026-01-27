@@ -37,6 +37,11 @@ from src.ingestion.osm_client import (
     RoadNetwork,
     get_evacuation_roads,
 )
+from src.ingestion.sentinel_client import (
+    SentinelClient,
+    SentinelImage,
+    BurnedAreaAnalysis,
+)
 
 __all__ = [
     # FIRMS
@@ -68,4 +73,8 @@ __all__ = [
     "EmergencyFacility",
     "RoadNetwork",
     "get_evacuation_roads",
+    # Sentinel
+    "SentinelClient",
+    "SentinelImage",
+    "BurnedAreaAnalysis",
 ]

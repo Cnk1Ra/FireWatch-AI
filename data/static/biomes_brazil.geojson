@@ -1,0 +1,114 @@
+{
+  "type": "FeatureCollection",
+  "name": "biomes_brazil",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Amazonia",
+        "name_en": "Amazon",
+        "carbon_tons_ha": 225,
+        "recovery_years": 50,
+        "spread_factor": 0.6,
+        "area_km2": 4196943,
+        "fire_risk": "medium"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-74, 5], [-44, 5], [-44, -10], [-74, -10], [-74, 5]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Cerrado",
+        "name_en": "Cerrado",
+        "carbon_tons_ha": 55,
+        "recovery_years": 15,
+        "spread_factor": 1.2,
+        "area_km2": 2036448,
+        "fire_risk": "high"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-60, -2], [-41, -2], [-41, -24], [-60, -24], [-60, -2]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Mata Atlantica",
+        "name_en": "Atlantic Forest",
+        "carbon_tons_ha": 150,
+        "recovery_years": 40,
+        "spread_factor": 0.8,
+        "area_km2": 1110182,
+        "fire_risk": "medium"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-55, -3], [-34, -3], [-34, -30], [-55, -30], [-55, -3]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Caatinga",
+        "name_en": "Caatinga",
+        "carbon_tons_ha": 30,
+        "recovery_years": 20,
+        "spread_factor": 1.0,
+        "area_km2": 844453,
+        "fire_risk": "high"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-46, -2], [-35, -2], [-35, -17], [-46, -17], [-46, -2]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Pampa",
+        "name_en": "Pampa",
+        "carbon_tons_ha": 20,
+        "recovery_years": 5,
+        "spread_factor": 1.5,
+        "area_km2": 176496,
+        "fire_risk": "low"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-58, -28], [-49, -28], [-49, -34], [-58, -34], [-58, -28]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Pantanal",
+        "name_en": "Pantanal",
+        "carbon_tons_ha": 70,
+        "recovery_years": 10,
+        "spread_factor": 0.4,
+        "area_km2": 150355,
+        "fire_risk": "very_high"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-59, -15], [-54, -15], [-54, -22], [-59, -22], [-59, -15]
+        ]]
+      }
+    }
+  ]
+}
