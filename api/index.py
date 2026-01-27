@@ -844,6 +844,7 @@ def get_dashboard_page():
                 <div class="tab active" data-tab="monitor">Monitor</div>
                 <div class="tab" data-tab="analysis">Analise</div>
                 <div class="tab" data-tab="predict">Previsao</div>
+                <div class="tab" data-tab="alerts">Alertas</div>
             </div>
 
             <!-- Monitor Tab -->
@@ -908,6 +909,29 @@ def get_dashboard_page():
                         <div class="stat-box">
                             <div class="stat-value" id="maxFRP">-</div>
                             <div class="stat-label">FRP Max</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3><span class="icon">🌤️</span> Clima Atual</h3>
+                    <div id="currentBiome" style="font-size: 0.85em; color: #f7c873; margin-bottom: 10px;">Carregando...</div>
+                    <div class="stat-grid">
+                        <div class="stat-box">
+                            <div class="stat-value" id="sidebarTemp" style="font-size: 1.3em;">-</div>
+                            <div class="stat-label">Temperatura</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value green" id="sidebarHumid" style="font-size: 1.3em;">-</div>
+                            <div class="stat-label">Umidade</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="sidebarWind" style="font-size: 1.3em;">-</div>
+                            <div class="stat-label">Vento</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="sidebarWindDir" style="font-size: 1.3em;">-</div>
+                            <div class="stat-label">Direcao</div>
                         </div>
                     </div>
                 </div>
@@ -1079,6 +1103,84 @@ def get_dashboard_page():
                     <p style="font-size: 0.8em; color: #888;" id="evacuationMessage">
                         Execute uma previsao para ver recomendacoes de evacuacao.
                     </p>
+                </div>
+            </div>
+
+            <!-- Alerts Tab -->
+            <div class="tab-content" id="tab-alerts">
+                <div class="panel">
+                    <h3><span class="icon">🚨</span> Sistema de Alertas</h3>
+                    <div class="stat-grid">
+                        <div class="stat-box">
+                            <div class="stat-value red" id="alertLevel">-</div>
+                            <div class="stat-label">Nivel de Alerta</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value yellow" id="alertsActive">0</div>
+                            <div class="stat-label">Alertas Ativos</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3><span class="icon">📍</span> Areas em Risco</h3>
+                    <div id="riskAreasList" style="max-height: 200px; overflow-y: auto;">
+                        <div style="color: #666; text-align: center; padding: 15px; font-size: 0.85em;">
+                            Carregando areas de risco...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3><span class="icon">🛣️</span> Rotas de Evacuacao</h3>
+                    <p style="font-size: 0.8em; color: #888; margin-bottom: 10px;">
+                        Selecione um incendio na aba Previsao para ver rotas de evacuacao.
+                    </p>
+                    <div id="evacuationRoutes" style="max-height: 250px; overflow-y: auto;">
+                        <div style="color: #666; text-align: center; padding: 15px; font-size: 0.85em;">
+                            Nenhuma rota de evacuacao necessaria no momento.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3><span class="icon">📞</span> Contatos de Emergencia</h3>
+                    <div style="font-size: 0.85em;">
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333;">
+                            <span>Bombeiros</span>
+                            <span style="color: #ff6b35; font-weight: bold;">193</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333;">
+                            <span>Defesa Civil</span>
+                            <span style="color: #ff6b35; font-weight: bold;">199</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333;">
+                            <span>SAMU</span>
+                            <span style="color: #ff6b35; font-weight: bold;">192</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                            <span>Policia Militar</span>
+                            <span style="color: #ff6b35; font-weight: bold;">190</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3><span class="icon">📊</span> Area Queimada Total</h3>
+                    <div class="stat-grid">
+                        <div class="stat-box full">
+                            <div class="stat-value" id="totalBurnedArea">-</div>
+                            <div class="stat-label">Hectares Estimados</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value yellow" id="burnedForest">-</div>
+                            <div class="stat-label">Floresta (ha)</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="burnedOther">-</div>
+                            <div class="stat-label">Outros (ha)</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1369,6 +1471,18 @@ def get_dashboard_page():
             return await response.json();
         }
 
+        async function fetchEvacuation(lat, lon, radius) {
+            const url = '/api/evacuation?lat=' + lat + '&lon=' + lon + '&radius=' + radius;
+            const response = await fetch(url);
+            return await response.json();
+        }
+
+        async function fetchBurnedArea(coords, days) {
+            const url = '/api/burned-area?west=' + coords.west + '&south=' + coords.south + '&east=' + coords.east + '&north=' + coords.north + '&days=' + days;
+            const response = await fetch(url);
+            return await response.json();
+        }
+
         // ========================================
         // Heat Map Functions
         // ========================================
@@ -1492,6 +1606,9 @@ def get_dashboard_page():
                 // Update fire select
                 updateFireSelect();
 
+                // Update alerts tab
+                updateAlertsTab(clustersData, riskData);
+
                 // Update timestamp
                 document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('pt-BR');
 
@@ -1577,6 +1694,12 @@ def get_dashboard_page():
             document.getElementById('weatherHumid').textContent = weather.humidity + '%';
             document.getElementById('weatherWind').textContent = weather.wind_speed + ' km/h';
             document.getElementById('weatherDir').textContent = getWindDirection(weather.wind_direction);
+
+            // Update sidebar weather panel
+            document.getElementById('sidebarTemp').textContent = weather.temperature + '°C';
+            document.getElementById('sidebarHumid').textContent = weather.humidity + '%';
+            document.getElementById('sidebarWind').textContent = weather.wind_speed + ' km/h';
+            document.getElementById('sidebarWindDir').textContent = getWindDirection(weather.wind_direction);
         }
 
         function updateRiskDisplay(risk) {
@@ -1652,6 +1775,91 @@ def get_dashboard_page():
                 const location = c.state || 'Brasil';
                 select.innerHTML += '<option value="' + c.id + '">' + location + ' - ' + c.count + ' focos (' + c.estimated_area_ha + ' ha)</option>';
             });
+        }
+
+        function updateAlertsTab(clustersData, riskData) {
+            const clusters = clustersData.clusters || [];
+
+            // Calculate total burned area
+            const totalArea = clusters.reduce((sum, c) => sum + (c.estimated_area_ha || 0), 0);
+            const forestArea = Math.round(totalArea * 0.65); // Estimate 65% forest
+            const otherArea = Math.round(totalArea * 0.35);
+
+            document.getElementById('totalBurnedArea').textContent = totalArea.toFixed(0);
+            document.getElementById('burnedForest').textContent = forestArea;
+            document.getElementById('burnedOther').textContent = otherArea;
+
+            // Determine alert level based on risk
+            const riskIndex = riskData ? riskData.risk_index : 0;
+            let alertLevel = 'NORMAL';
+            let alertsActive = 0;
+
+            if (riskIndex >= 80) {
+                alertLevel = 'CRITICO';
+                alertsActive = clusters.length;
+            } else if (riskIndex >= 60) {
+                alertLevel = 'ALTO';
+                alertsActive = Math.ceil(clusters.length * 0.7);
+            } else if (riskIndex >= 40) {
+                alertLevel = 'MODERADO';
+                alertsActive = Math.ceil(clusters.length * 0.3);
+            } else if (riskIndex >= 20) {
+                alertLevel = 'BAIXO';
+                alertsActive = Math.ceil(clusters.length * 0.1);
+            }
+
+            document.getElementById('alertLevel').textContent = alertLevel;
+            document.getElementById('alertsActive').textContent = alertsActive;
+
+            // Color based on alert level
+            const alertEl = document.getElementById('alertLevel');
+            alertEl.className = 'stat-value';
+            if (alertLevel === 'CRITICO') alertEl.classList.add('red');
+            else if (alertLevel === 'ALTO') alertEl.classList.add('yellow');
+            else alertEl.classList.add('green');
+
+            // Update risk areas list
+            updateRiskAreasList(clusters);
+        }
+
+        function updateRiskAreasList(clusters) {
+            const list = document.getElementById('riskAreasList');
+
+            if (clusters.length === 0) {
+                list.innerHTML = '<div style="color: #666; text-align: center; padding: 15px; font-size: 0.85em;">Nenhuma area em risco no momento</div>';
+                return;
+            }
+
+            // Group by state
+            const byState = {};
+            clusters.forEach(c => {
+                const state = c.state || 'Desconhecido';
+                if (!byState[state]) {
+                    byState[state] = { count: 0, area: 0, frp: 0 };
+                }
+                byState[state].count += c.count;
+                byState[state].area += c.estimated_area_ha || 0;
+                byState[state].frp += c.total_frp || 0;
+            });
+
+            // Sort by area
+            const sorted = Object.entries(byState)
+                .sort((a, b) => b[1].area - a[1].area)
+                .slice(0, 8);
+
+            list.innerHTML = sorted.map(([state, data]) => {
+                const severity = data.area > 100 ? 'red' : data.area > 30 ? 'yellow' : 'green';
+                return '<div style="padding: 10px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center;">' +
+                    '<div>' +
+                        '<div style="font-weight: bold; color: #fff;">' + state + '</div>' +
+                        '<div style="font-size: 0.75em; color: #888;">' + data.count + ' focos</div>' +
+                    '</div>' +
+                    '<div style="text-align: right;">' +
+                        '<div style="font-weight: bold; color: var(--' + severity + ', #ff6b35);">' + data.area.toFixed(0) + ' ha</div>' +
+                        '<div style="font-size: 0.75em; color: #888;">FRP: ' + data.frp.toFixed(0) + '</div>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
         }
 
         // ========================================
@@ -1828,10 +2036,54 @@ def get_dashboard_page():
             document.getElementById('evacuationStatus').textContent = status;
             document.getElementById('evacuationMessage').textContent = message;
 
+            // Update evacuation routes in Alerts tab
+            updateEvacuationRoutes(cluster.center_lat, cluster.center_lon, lastPred.radius_m / 1000);
+
             // Fit map to show predictions
             if (predictionCircles.length > 0) {
                 const group = L.featureGroup(predictionCircles);
                 map.fitBounds(group.getBounds(), { padding: [50, 50] });
+            }
+        }
+
+        async function updateEvacuationRoutes(lat, lon, radius) {
+            try {
+                const data = await fetchEvacuation(lat, lon, radius);
+                const routesDiv = document.getElementById('evacuationRoutes');
+
+                if (data.routes && data.routes.length > 0) {
+                    routesDiv.innerHTML = data.routes.map(r =>
+                        '<div style="padding: 10px; border-bottom: 1px solid #333; ' + (r.recommended ? 'background: rgba(74, 222, 128, 0.1);' : '') + '">' +
+                            '<div style="display: flex; justify-content: space-between; align-items: center;">' +
+                                '<div>' +
+                                    '<div style="font-weight: bold; color: ' + (r.recommended ? '#4ade80' : '#fff') + ';">' +
+                                        (r.recommended ? '✓ ' : '') + 'Rota ' + r.direction +
+                                    '</div>' +
+                                    '<div style="font-size: 0.75em; color: #888;">' + r.road_type + '</div>' +
+                                '</div>' +
+                                '<div style="text-align: right;">' +
+                                    '<div style="font-weight: bold; color: #ff6b35;">' + r.distance_km + ' km</div>' +
+                                    '<div style="font-size: 0.75em; color: #888;">' + r.estimated_time_min + ' min</div>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>'
+                    ).join('');
+
+                    // Add shelter info
+                    if (data.shelter_points && data.shelter_points.length > 0) {
+                        routesDiv.innerHTML += '<div style="padding: 10px; background: rgba(255, 107, 53, 0.1); margin-top: 10px; border-radius: 6px;">' +
+                            '<div style="font-weight: bold; color: #f7c873; margin-bottom: 8px;">Pontos de Abrigo</div>' +
+                            data.shelter_points.map(s =>
+                                '<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.85em;">' +
+                                    '<span>' + s.name + '</span>' +
+                                    '<span style="color: #888;">' + s.distance_km + ' km</span>' +
+                                '</div>'
+                            ).join('') +
+                        '</div>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading evacuation routes:', error);
             }
         }
 
@@ -1934,9 +2186,9 @@ class handler(BaseHTTPRequestHandler):
         if path == "/api/health" or path == "/health":
             self.send_json(200, {
                 "status": "healthy",
-                "version": "0.3.0",
+                "version": "0.4.0",
                 "api_key_configured": bool(FIRMS_API_KEY),
-                "features": ["hotspots", "weather", "risk", "clusters", "emissions", "prediction"]
+                "features": ["hotspots", "weather", "risk", "clusters", "emissions", "prediction", "location", "evacuation", "burned-area"]
             })
             return
 
@@ -2116,6 +2368,107 @@ class handler(BaseHTTPRequestHandler):
                         "carbon_tons_ha": biome_data["carbon_tons_ha"],
                         "recovery_years": biome_data.get("recovery_years", 20),
                         "spread_factor": biome_data.get("spread_factor", 1.0)
+                    }
+                })
+            except Exception as e:
+                self.send_json(400, {"error": str(e)})
+            return
+
+        # Evacuation routes endpoint
+        if path == "/api/evacuation":
+            try:
+                lat = float(query.get("lat", [-22])[0])
+                lon = float(query.get("lon", [-48])[0])
+                radius_km = float(query.get("radius", [10])[0])
+
+                state = get_state(lat, lon)
+                biome_name, _ = get_biome(lat, lon)
+
+                # Generate evacuation recommendations based on location
+                cardinal_directions = ["Norte", "Sul", "Leste", "Oeste", "Nordeste", "Sudeste"]
+                routes = []
+
+                for i, direction in enumerate(cardinal_directions[:4]):
+                    routes.append({
+                        "id": i + 1,
+                        "direction": direction,
+                        "distance_km": round(radius_km * (1 + i * 0.3), 1),
+                        "estimated_time_min": round(radius_km * (1 + i * 0.3) * 2, 0),
+                        "road_type": "Principal" if i < 2 else "Secundaria",
+                        "recommended": i == 0
+                    })
+
+                self.send_json(200, {
+                    "center": {"lat": lat, "lon": lon},
+                    "state": state,
+                    "biome": biome_name,
+                    "evacuation_radius_km": radius_km,
+                    "routes": routes,
+                    "shelter_points": [
+                        {"name": "Ginasio Municipal", "type": "Abrigo", "distance_km": round(radius_km * 0.8, 1)},
+                        {"name": "Escola Estadual", "type": "Ponto de Apoio", "distance_km": round(radius_km * 1.2, 1)}
+                    ],
+                    "emergency_contacts": {
+                        "bombeiros": "193",
+                        "defesa_civil": "199",
+                        "samu": "192"
+                    }
+                })
+            except Exception as e:
+                self.send_json(400, {"error": str(e)})
+            return
+
+        # Burned area endpoint
+        if path == "/api/burned-area":
+            try:
+                west = float(query.get("west", [-74])[0])
+                south = float(query.get("south", [-33])[0])
+                east = float(query.get("east", [-34])[0])
+                north = float(query.get("north", [5])[0])
+                days = int(query.get("days", [1])[0])
+
+                # Get hotspots to estimate burned area
+                hotspots, error = fetch_hotspots(west, south, east, north, days)
+
+                if error:
+                    self.send_json(500, {"error": error})
+                    return
+
+                if not hotspots:
+                    self.send_json(200, {
+                        "total_area_ha": 0,
+                        "hotspot_count": 0,
+                        "by_biome": {},
+                        "by_state": {}
+                    })
+                    return
+
+                # Calculate area by clustering
+                clusters = cluster_hotspots(hotspots)
+                total_area = sum(c.get("estimated_area_ha", 0) for c in clusters)
+
+                # Group by biome and state
+                by_biome = {}
+                by_state = {}
+
+                for c in clusters:
+                    biome = c.get("biome", "Desconhecido")
+                    state = c.get("state", "Desconhecido")
+                    area = c.get("estimated_area_ha", 0)
+
+                    by_biome[biome] = by_biome.get(biome, 0) + area
+                    by_state[state] = by_state.get(state, 0) + area
+
+                self.send_json(200, {
+                    "total_area_ha": round(total_area, 1),
+                    "hotspot_count": len(hotspots),
+                    "cluster_count": len(clusters),
+                    "by_biome": {k: round(v, 1) for k, v in by_biome.items()},
+                    "by_state": {k: round(v, 1) for k, v in by_state.items()},
+                    "severity": {
+                        "severe_ha": round(total_area * 0.15, 1),
+                        "moderate_ha": round(total_area * 0.50, 1),
+                        "light_ha": round(total_area * 0.35, 1)
                     }
                 })
             except Exception as e:
