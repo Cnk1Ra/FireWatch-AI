@@ -483,8 +483,13 @@ def get_dashboard_page():
         .btn-primary:hover { background: #ff8555; }
         .btn-secondary { background: #333; color: white; }
         .btn-secondary:hover { background: #444; }
+        .btn-secondary.active { background: #ff6b35; }
         .btn-danger { background: #dc2626; color: white; }
         .btn-danger:hover { background: #ef4444; }
+        .view-btn.active { background: #ff6b35 !important; color: white !important; }
+        .view-btn:hover { background: #333 !important; color: white !important; }
+        .pulse { animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
         /* Risk Meter */
         .risk-meter {
@@ -825,7 +830,20 @@ def get_dashboard_page():
                             <option value="7">7 dias</option>
                         </select>
                     </div>
-                    <button class="btn btn-primary" onclick="loadAllData()">Atualizar Dados</button>
+                    <button class="btn btn-primary" onclick="loadAllData(true)">Atualizar Dados</button>
+                    <button class="btn btn-secondary active" id="autoRefreshBtn" onclick="toggleAutoRefresh()">⏸ Pausar</button>
+                </div>
+
+                <div class="panel">
+                    <h3><span class="icon">🗺️</span> Visualizacao</h3>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="view-btn active" data-view="markers" onclick="setViewMode('markers')" style="flex:1; padding: 8px; border: 1px solid #333; background: #ff6b35; color: white; border-radius: 4px; cursor: pointer; font-size: 0.8em;">Marcadores</button>
+                        <button class="view-btn" data-view="heatmap" onclick="setViewMode('heatmap')" style="flex:1; padding: 8px; border: 1px solid #333; background: #0f0f1a; color: #888; border-radius: 4px; cursor: pointer; font-size: 0.8em;">Calor</button>
+                        <button class="view-btn" data-view="both" onclick="setViewMode('both')" style="flex:1; padding: 8px; border: 1px solid #333; background: #0f0f1a; color: #888; border-radius: 4px; cursor: pointer; font-size: 0.8em;">Ambos</button>
+                    </div>
+                    <p style="font-size: 0.7em; color: #666; margin-top: 8px; text-align: center;">
+                        Use o controle no mapa para trocar o estilo base (Escuro, Satelite, Terreno, Ruas)
+                    </p>
                 </div>
 
                 <div class="panel">
@@ -1081,6 +1099,10 @@ def get_dashboard_page():
                     <span>🕐 Atualizado:</span>
                     <span class="value" id="lastUpdate">-</span>
                 </div>
+                <div class="info-chip" id="liveIndicator" style="background: rgba(255,107,53,0.3);">
+                    <span style="color: #ff6b35;">●</span>
+                    <span class="value" style="color: #ff6b35;">AO VIVO</span>
+                </div>
                 <div class="info-chip">
                     <span>🌍 Bioma:</span>
                     <span class="value" id="currentBiome">-</span>
@@ -1091,10 +1113,16 @@ def get_dashboard_page():
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
     <script>
         // ========================================
         // Configuration
         // ========================================
+        let autoRefreshInterval = null;
+        let autoRefreshEnabled = false;
+        let currentViewMode = 'markers'; // 'markers', 'heatmap', 'both'
+        let heatLayer = null;
+
         const regions = {
             brazil: { west: -74, south: -34, east: -34, north: 5, center: [-14, -52], zoom: 4 },
             amazon: { west: -74, south: -10, east: -44, north: 5, center: [-3, -60], zoom: 5 },
@@ -1115,14 +1143,42 @@ def get_dashboard_page():
         let predictionCircles = [];
 
         // ========================================
-        // Initialize Map
+        // Initialize Map with Multiple Layers
         // ========================================
         const map = L.map('map').setView([-22, -48], 6);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        // Base layers
+        const darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; OpenStreetMap, &copy; CartoDB',
             maxZoom: 19
-        }).addTo(map);
+        });
+
+        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: '&copy; Esri',
+            maxZoom: 19
+        });
+
+        const terrainLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenTopoMap',
+            maxZoom: 17
+        });
+
+        const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap',
+            maxZoom: 19
+        });
+
+        // Add default layer
+        darkLayer.addTo(map);
+
+        // Layer control
+        const baseLayers = {
+            'Escuro': darkLayer,
+            'Satelite': satelliteLayer,
+            'Terreno': terrainLayer,
+            'Ruas': streetLayer
+        };
+        L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map);
 
         const markers = L.markerClusterGroup({
             maxClusterRadius: 50,
@@ -1223,15 +1279,89 @@ def get_dashboard_page():
         }
 
         // ========================================
+        // Heat Map Functions
+        // ========================================
+        function updateHeatMap() {
+            if (heatLayer) {
+                map.removeLayer(heatLayer);
+            }
+
+            if (currentViewMode === 'markers') return;
+
+            const heatData = currentHotspots.map(h => [
+                h.latitude,
+                h.longitude,
+                Math.min(1, h.frp / 100)  // Normalize intensity
+            ]);
+
+            heatLayer = L.heatLayer(heatData, {
+                radius: 25,
+                blur: 15,
+                maxZoom: 10,
+                max: 1.0,
+                gradient: {
+                    0.0: '#ffffb2',
+                    0.25: '#fecc5c',
+                    0.5: '#fd8d3c',
+                    0.75: '#f03b20',
+                    1.0: '#bd0026'
+                }
+            }).addTo(map);
+        }
+
+        function setViewMode(mode) {
+            currentViewMode = mode;
+
+            // Update buttons
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('[data-view="' + mode + '"]').classList.add('active');
+
+            // Update layers
+            if (mode === 'markers') {
+                if (heatLayer) map.removeLayer(heatLayer);
+                map.addLayer(markers);
+            } else if (mode === 'heatmap') {
+                map.removeLayer(markers);
+                updateHeatMap();
+            } else { // both
+                map.addLayer(markers);
+                updateHeatMap();
+            }
+        }
+
+        // ========================================
+        // Auto Refresh Functions
+        // ========================================
+        function toggleAutoRefresh() {
+            autoRefreshEnabled = !autoRefreshEnabled;
+            const btn = document.getElementById('autoRefreshBtn');
+            const indicator = document.getElementById('liveIndicator');
+
+            if (autoRefreshEnabled) {
+                btn.classList.add('active');
+                btn.innerHTML = '⏸ Pausar';
+                indicator.style.display = 'flex';
+                indicator.classList.add('pulse');
+                autoRefreshInterval = setInterval(() => loadAllData(false), 5000);
+            } else {
+                btn.classList.remove('active');
+                btn.innerHTML = '▶ Auto (5s)';
+                indicator.style.display = 'none';
+                indicator.classList.remove('pulse');
+                clearInterval(autoRefreshInterval);
+            }
+        }
+
+        // ========================================
         // Load All Data
         // ========================================
-        async function loadAllData() {
+        async function loadAllData(fitBounds = false) {
             const region = document.getElementById('regionSelect').value;
             const days = document.getElementById('daysSelect').value;
             const coords = regions[region];
             const droughtDays = parseInt(document.getElementById('droughtDays').value) || 5;
 
-            showLoading();
+            if (!autoRefreshEnabled) showLoading();
 
             try {
                 // Load hotspots
@@ -1274,18 +1404,23 @@ def get_dashboard_page():
                 // Update timestamp
                 document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('pt-BR');
 
-                // Fit map
-                if (currentHotspots.length > 0) {
+                // Update heat map if active
+                if (currentViewMode !== 'markers') {
+                    updateHeatMap();
+                }
+
+                // Fit map only on first load or manual refresh
+                if (fitBounds && currentHotspots.length > 0) {
                     map.fitBounds(markers.getBounds(), { padding: [50, 50] });
-                } else {
-                    map.setView(coords.center, coords.zoom);
                 }
 
             } catch (error) {
                 console.error('Error loading data:', error);
-                alert('Erro ao carregar dados: ' + error.message);
+                if (!autoRefreshEnabled) {
+                    alert('Erro ao carregar dados: ' + error.message);
+                }
             } finally {
-                hideLoading();
+                if (!autoRefreshEnabled) hideLoading();
             }
         }
 
@@ -1559,12 +1694,18 @@ def get_dashboard_page():
         document.getElementById('regionSelect').addEventListener('change', function() {
             const coords = regions[this.value];
             map.setView(coords.center, coords.zoom);
+            loadAllData(false);
         });
 
         // ========================================
         // Initialize
         // ========================================
-        loadAllData();
+        loadAllData(true);
+
+        // Start auto-refresh by default
+        setTimeout(() => {
+            toggleAutoRefresh();
+        }, 1000);
     </script>
 </body>
 </html>"""
