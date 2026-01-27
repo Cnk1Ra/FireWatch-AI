@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  firewatch-api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: firewatch-api
+    ports:
+      - "8000:8000"
+    environment:
+      - FIRMS_API_KEY=${FIRMS_API_KEY}
+      - APP_ENV=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+    volumes:
+      - ../data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Optional: Redis for caching (Phase 2)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: firewatch-redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis-data:/data
+  #   restart: unless-stopped
+
+  # Optional: PostgreSQL for data persistence (Phase 2)
+  # postgres:
+  #   image: postgis/postgis:15-3.3-alpine
+  #   container_name: firewatch-db
+  #   environment:
+  #     - POSTGRES_USER=firewatch
+  #     - POSTGRES_PASSWORD=firewatch_secret
+  #     - POSTGRES_DB=firewatch_db
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+
+# volumes:
+#   redis-data:
+#   postgres-data:
+
+networks:
+  default:
+    name: firewatch-network

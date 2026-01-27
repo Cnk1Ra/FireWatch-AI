@@ -1,0 +1,162 @@
+{
+  "metadata": {
+    "description": "Fuel and vegetation factors for fire spread calculation",
+    "version": "1.0",
+    "source": "Literature compilation - Rothermel (1972), Scott & Burgan (2005)",
+    "units": {
+      "fuel_load": "kg/m²",
+      "fuel_depth": "meters",
+      "moisture_extinction": "percent",
+      "heat_content": "kJ/kg",
+      "surface_to_volume": "1/m"
+    }
+  },
+  "fuel_models": {
+    "floresta_densa": {
+      "name": "Dense Forest",
+      "name_pt": "Floresta Densa",
+      "description": "Dense tropical forest with high canopy closure",
+      "fuel_load_kg_m2": 2.5,
+      "fuel_depth_m": 0.5,
+      "dead_fuel_moisture": 0.15,
+      "live_fuel_moisture": 1.0,
+      "moisture_extinction": 30,
+      "surface_to_volume_ratio": 5000,
+      "heat_content_kj_kg": 18000,
+      "spread_rate_factor": 0.6,
+      "flame_length_factor": 1.2,
+      "biomes": ["Amazônia", "Mata Atlântica"]
+    },
+    "floresta_aberta": {
+      "name": "Open Forest",
+      "name_pt": "Floresta Aberta",
+      "description": "Open woodland with lower canopy density",
+      "fuel_load_kg_m2": 1.8,
+      "fuel_depth_m": 0.4,
+      "dead_fuel_moisture": 0.12,
+      "live_fuel_moisture": 0.9,
+      "moisture_extinction": 25,
+      "surface_to_volume_ratio": 5500,
+      "heat_content_kj_kg": 18500,
+      "spread_rate_factor": 0.8,
+      "flame_length_factor": 1.0,
+      "biomes": ["Mata Atlântica", "Cerrado"]
+    },
+    "cerrado_tipico": {
+      "name": "Cerrado Savanna",
+      "name_pt": "Cerrado Típico",
+      "description": "Brazilian savanna with mixed trees and grasses",
+      "fuel_load_kg_m2": 0.8,
+      "fuel_depth_m": 0.6,
+      "dead_fuel_moisture": 0.10,
+      "live_fuel_moisture": 0.8,
+      "moisture_extinction": 20,
+      "surface_to_volume_ratio": 6000,
+      "heat_content_kj_kg": 18500,
+      "spread_rate_factor": 1.2,
+      "flame_length_factor": 0.8,
+      "biomes": ["Cerrado"]
+    },
+    "cerrado_campo": {
+      "name": "Cerrado Grassland",
+      "name_pt": "Campo Cerrado",
+      "description": "Open grassland within Cerrado biome",
+      "fuel_load_kg_m2": 0.5,
+      "fuel_depth_m": 0.8,
+      "dead_fuel_moisture": 0.08,
+      "live_fuel_moisture": 0.6,
+      "moisture_extinction": 15,
+      "surface_to_volume_ratio": 7500,
+      "heat_content_kj_kg": 18000,
+      "spread_rate_factor": 1.5,
+      "flame_length_factor": 0.6,
+      "biomes": ["Cerrado", "Pampa"]
+    },
+    "caatinga": {
+      "name": "Caatinga",
+      "name_pt": "Caatinga",
+      "description": "Semi-arid shrubland with thorny vegetation",
+      "fuel_load_kg_m2": 0.4,
+      "fuel_depth_m": 0.3,
+      "dead_fuel_moisture": 0.06,
+      "live_fuel_moisture": 0.5,
+      "moisture_extinction": 12,
+      "surface_to_volume_ratio": 6500,
+      "heat_content_kj_kg": 17500,
+      "spread_rate_factor": 1.0,
+      "flame_length_factor": 0.7,
+      "biomes": ["Caatinga"]
+    },
+    "pantanal": {
+      "name": "Pantanal Wetland",
+      "name_pt": "Pantanal",
+      "description": "Seasonal wetland with variable moisture",
+      "fuel_load_kg_m2": 1.0,
+      "fuel_depth_m": 0.4,
+      "dead_fuel_moisture": 0.20,
+      "live_fuel_moisture": 1.2,
+      "moisture_extinction": 35,
+      "surface_to_volume_ratio": 5000,
+      "heat_content_kj_kg": 17000,
+      "spread_rate_factor": 0.4,
+      "flame_length_factor": 0.5,
+      "biomes": ["Pantanal"]
+    },
+    "pastagem": {
+      "name": "Pasture",
+      "name_pt": "Pastagem",
+      "description": "Cultivated or managed grassland for cattle",
+      "fuel_load_kg_m2": 0.3,
+      "fuel_depth_m": 0.4,
+      "dead_fuel_moisture": 0.10,
+      "live_fuel_moisture": 0.7,
+      "moisture_extinction": 18,
+      "surface_to_volume_ratio": 7000,
+      "heat_content_kj_kg": 17500,
+      "spread_rate_factor": 1.8,
+      "flame_length_factor": 0.5,
+      "biomes": ["any"]
+    },
+    "agricultura": {
+      "name": "Agriculture",
+      "name_pt": "Agricultura",
+      "description": "Cropland and agricultural areas",
+      "fuel_load_kg_m2": 0.6,
+      "fuel_depth_m": 0.5,
+      "dead_fuel_moisture": 0.12,
+      "live_fuel_moisture": 0.8,
+      "moisture_extinction": 20,
+      "surface_to_volume_ratio": 6000,
+      "heat_content_kj_kg": 17000,
+      "spread_rate_factor": 1.3,
+      "flame_length_factor": 0.7,
+      "biomes": ["any"]
+    }
+  },
+  "biome_defaults": {
+    "Amazônia": "floresta_densa",
+    "Mata Atlântica": "floresta_aberta",
+    "Cerrado": "cerrado_tipico",
+    "Caatinga": "caatinga",
+    "Pampa": "cerrado_campo",
+    "Pantanal": "pantanal"
+  },
+  "biomass_carbon_content": {
+    "description": "Tons of carbon per hectare by biome",
+    "Amazônia": {"min": 150, "avg": 225, "max": 300},
+    "Mata Atlântica": {"min": 100, "avg": 150, "max": 200},
+    "Cerrado": {"min": 30, "avg": 55, "max": 80},
+    "Caatinga": {"min": 20, "avg": 30, "max": 40},
+    "Pampa": {"min": 10, "avg": 20, "max": 30},
+    "Pantanal": {"min": 40, "avg": 70, "max": 100}
+  },
+  "recovery_time_years": {
+    "description": "Estimated years for full ecosystem recovery after fire",
+    "Amazônia": 50,
+    "Mata Atlântica": 40,
+    "Cerrado": 15,
+    "Caatinga": 20,
+    "Pampa": 5,
+    "Pantanal": 10
+  }
+}
