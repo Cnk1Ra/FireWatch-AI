@@ -72,3 +72,5 @@ Thumbs.db
 *.pem
 *.key
 secrets/
+.vercel
+.env*.local
