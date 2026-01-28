@@ -1,0 +1,23 @@
+# FireWatch AI - Vercel Serverless Dependencies (Lightweight)
+
+# Web Framework
+fastapi>=0.104.0
+uvicorn>=0.24.0
+python-multipart>=0.0.6
+
+# HTTP Client
+httpx>=0.25.0
+
+# Data Processing (lightweight)
+numpy>=1.24.0
+
+# Geospatial & Maps
+folium>=0.15.0
+
+# Notifications
+twilio>=8.10.0
+
+# Utilities
+python-dotenv>=1.0.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0

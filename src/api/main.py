@@ -8,6 +8,7 @@ Run with: uvicorn src.api.main:app --reload
 """
 
 import os
+import sys
 from datetime import datetime
 from typing import Optional, List
 
@@ -16,11 +17,23 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
+# Add project root to path for imports
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 from src.ingestion.firms_client import FIRMSClient, DataSource
 from src.crowdsource.report_handler import ReportHandler, FireReport, ReportStatus
-from src.crowdsource.validation import ReportValidator, validate_report
-from src.alerts.alert_manager import AlertManager, AlertLevel, AlertChannel, create_fire_alert
-from src.visualization.map_generator import create_fire_map
+from src.crowdsource.validation import validate_report
+from src.alerts.alert_manager import AlertManager, AlertLevel, AlertChannel
+
+# Optional imports (may not be available in serverless)
+try:
+    from src.visualization.map_generator import create_fire_map
+    MAP_AVAILABLE = True
+except ImportError:
+    MAP_AVAILABLE = False
+    create_fire_map = None
 
 # Configuration
 FIRMS_API_KEY = os.getenv("FIRMS_API_KEY", "")
