@@ -1293,36 +1293,42 @@ def get_dashboard_page():
         // ========================================
         const map = L.map('map').setView([-22, -48], 6);
 
-        // Base layers
+        // Base layers - Google Maps as default
+        const googleMaps = L.tileLayer('https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}', {
+            attribution: '&copy; Google Maps',
+            maxZoom: 20
+        });
+
+        const googleSatellite = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            attribution: '&copy; Google Satellite',
+            maxZoom: 20
+        });
+
+        const googleHybrid = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+            attribution: '&copy; Google Hybrid',
+            maxZoom: 20
+        });
+
+        const googleTerrain = L.tileLayer('https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {
+            attribution: '&copy; Google Terrain',
+            maxZoom: 20
+        });
+
         const darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap, &copy; CartoDB',
+            attribution: '&copy; CartoDB',
             maxZoom: 19
         });
 
-        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: '&copy; Esri',
-            maxZoom: 19
-        });
-
-        const terrainLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenTopoMap',
-            maxZoom: 17
-        });
-
-        const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap',
-            maxZoom: 19
-        });
-
-        // Add default layer
-        darkLayer.addTo(map);
+        // Add Google Maps as default layer
+        googleMaps.addTo(map);
 
         // Layer control
         const baseLayers = {
-            'Escuro': darkLayer,
-            'Satelite': satelliteLayer,
-            'Terreno': terrainLayer,
-            'Ruas': streetLayer
+            'Google Maps': googleMaps,
+            'Google Satellite': googleSatellite,
+            'Google Hybrid': googleHybrid,
+            'Google Terrain': googleTerrain,
+            'Modo Escuro': darkLayer
         };
         L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map);
 
