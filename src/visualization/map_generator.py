@@ -74,29 +74,52 @@ def create_fire_map(
         lons = [h.longitude for h in hotspots]
         center = (sum(lats) / len(lats), sum(lons) / len(lons))
     
-    # Create base map
+    # Create base map with Google Maps as default
     fire_map = folium.Map(
         location=center,
         zoom_start=zoom,
         tiles=None,
     )
-    
-    # Add tile layers
+
+    # Google Maps layers (primary - familiar interface)
     folium.TileLayer(
-        tiles="CartoDB dark_matter",
-        name="Dark",
-        attr="CartoDB",
+        tiles="https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}",
+        name="Google Maps",
+        attr="Google",
+        max_zoom=20,
     ).add_to(fire_map)
-    
+
+    folium.TileLayer(
+        tiles="https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+        name="Google Satellite",
+        attr="Google",
+        max_zoom=20,
+    ).add_to(fire_map)
+
+    folium.TileLayer(
+        tiles="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
+        name="Google Hybrid",
+        attr="Google",
+        max_zoom=20,
+    ).add_to(fire_map)
+
+    folium.TileLayer(
+        tiles="https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}",
+        name="Google Terrain",
+        attr="Google",
+        max_zoom=20,
+    ).add_to(fire_map)
+
+    # Alternative layers
     folium.TileLayer(
         tiles="OpenStreetMap",
-        name="Street",
+        name="OpenStreetMap",
     ).add_to(fire_map)
-    
+
     folium.TileLayer(
-        tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-        name="Satellite",
-        attr="Esri",
+        tiles="CartoDB dark_matter",
+        name="Dark Mode",
+        attr="CartoDB",
     ).add_to(fire_map)
     
     # Add heatmap layer
